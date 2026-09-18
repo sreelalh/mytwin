@@ -1,112 +1,26 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import { PROFILE } from "@/data/profile";
 import {
   SparklesIcon,
   BotIcon,
-  UserIcon,
-  SendIcon,
   TerminalIcon,
-  CheckIcon,
-  CopyIcon,
   RefreshCwIcon
 } from "./Icons";
 
-interface Message {
-  role: "user" | "assistant";
-  content: string;
-  source?: string;
-}
+const GRADIO_CHAT_URL = "https://mytwinchatdocker.onrender.com";
 
 export const DigitalTwinSection: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: "assistant",
-      content:
-        `Greetings! I am the **Digital Twin of Sreelal H**, powered by OpenRouter using the **\`nvidia/nemotron-3.5-lightning:free\`** model.\n\nWith over ${PROFILE.yearsOfExperience} years of technical leadership across Ernst & Young, TCS, and Tier-1 enterprises in Banking, Insurance, Healthcare, and Travel, I can answer deep questions about my architectural patterns, mobile engineering, microfrontends, or Agentic AI systems.\n\nSelect a query below or type your own question to begin.`
-    }
-  ]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-  const chatStreamRef = useRef<HTMLDivElement>(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
-  const presetQuestions = [
-    "What was your architecture for Bank of Bangkok's biometric wallet?",
-    "How did you engineer Royal Caribbean's connected stateroom & BLE digital keys?",
-    "What is your approach to Guidewire Jutro & React microfrontends?",
-    "How do you apply Agentic AI, LLMs, and RAG in enterprise platforms?",
-    "What certifications and credentials do you hold?"
+  const sampleTopics = [
+    "Bank of Bangkok's biometric wallet architecture",
+    "Royal Caribbean's connected stateroom & BLE digital keys",
+    "Guidewire Jutro & React microfrontends",
+    "Agentic AI, LLMs, and RAG in enterprise platforms",
+    "Certifications and credentials"
   ];
-
-  const scrollToBottom = () => {
-    // Scroll only within the chat stream container, never the page itself
-    const container = chatStreamRef.current;
-    if (container) container.scrollTop = container.scrollHeight;
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, loading]);
-
-  const handleSend = async (queryText?: string) => {
-    const text = (queryText || input).trim();
-    if (!text || loading) return;
-
-    const userMessage: Message = { role: "user", content: text };
-    const newHistory = [...messages, userMessage];
-    setMessages(newHistory);
-    setInput("");
-    setLoading(true);
-
-    try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: newHistory.map((m) => ({ role: m.role, content: m.content }))
-        })
-      });
-
-      const data = await response.json();
-      setMessages([
-        ...newHistory,
-        {
-          role: "assistant",
-          content: data.reply || "No response received.",
-          source: data.source
-        }
-      ]);
-    } catch (err) {
-      setMessages([
-        ...newHistory,
-        {
-          role: "assistant",
-          content:
-            `I encountered a momentary network hiccup, but across my ${PROFILE.yearsOfExperienceLabel} years of architecture, I focus on decoupled resilient systems. Feel free to try querying again!`
-        }
-      ]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const copyMessage = (text: string, idx: number) => {
-    navigator.clipboard.writeText(text);
-    setCopiedIndex(idx);
-    setTimeout(() => setCopiedIndex(null), 2000);
-  };
-
-  const handleReset = () => {
-    setMessages([
-      {
-        role: "assistant",
-        content:
-          "Conversation reset. I am ready to answer any questions about Sreelal's career, architecture philosophies, or technical leadership. What would you like to explore?"
-      }
-    ]);
-  };
 
   return (
     <section id="digital-twin" className="py-14 md:py-20 relative overflow-hidden">
@@ -129,16 +43,16 @@ export const DigitalTwinSection: React.FC = () => {
           </p>
           <div className="flex items-center gap-2 text-xs font-mono text-cyan-400/90 pt-1">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>OpenRouter Model:</span>
+            <span>Gradio Twin:</span>
             <code className="bg-white/[0.06] px-2 py-0.5 rounded text-cyan-200 border border-cyan-500/30">
-              nvidia/nemotron-3.5-lightning:free
+              mytwinchatdocker.onrender.com
             </code>
           </div>
         </div>
 
         {/* Dual Column Console Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column: Telemetry & Starter Prompts */}
+          {/* Left Column: Telemetry & Sample Topics */}
           <div className="lg:col-span-4 space-y-5">
             {/* Persona Telemetry Card */}
             <div className="glass-panel p-6 rounded-2xl border border-white/10 space-y-4">
@@ -167,43 +81,41 @@ export const DigitalTwinSection: React.FC = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500">Provider:</span>
-                  <span className="text-emerald-400">OpenRouter API</span>
+                  <span className="text-emerald-400">Gradio on Render</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Inference Engine:</span>
-                  <span className="text-purple-300 text-[11px]">NVIDIA Nemotron 3.5</span>
+                  <span className="text-gray-500">Deployment:</span>
+                  <span className="text-purple-300 text-[11px]">Dockerized Container</span>
                 </div>
               </div>
             </div>
 
-            {/* Quick Inquiries / Preset Chips */}
+            {/* Sample Topics */}
             <div className="glass-panel p-6 rounded-2xl border border-white/10 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="font-mono text-xs uppercase tracking-wider text-cyan-400">
-                  Recommended Inquiries
+                  Sample Topics
                 </span>
-                <span className="text-[10px] font-mono text-gray-500">Click to ask</span>
+                <span className="text-[10px] font-mono text-gray-500">Ask in chat &rarr;</span>
               </div>
 
               <div className="space-y-2">
-                {presetQuestions.map((q, idx) => (
-                  <button
+                {sampleTopics.map((q, idx) => (
+                  <div
                     key={idx}
-                    onClick={() => handleSend(q)}
-                    disabled={loading}
-                    className="w-full text-left p-2.5 rounded-xl bg-white/[0.02] border border-white/5 hover:border-cyan-500/40 hover:bg-cyan-500/10 transition-all text-xs text-gray-300 hover:text-cyan-200 font-sans cursor-pointer group flex items-start gap-2"
+                    className="w-full text-left p-2.5 rounded-xl bg-white/[0.02] border border-white/5 text-xs text-gray-300 font-sans flex items-start gap-2"
                   >
-                    <span className="text-cyan-400 font-mono group-hover:translate-x-0.5 transition-transform">
+                    <span className="text-cyan-400 font-mono">
                       &rsaquo;
                     </span>
                     <span className="leading-snug">{q}</span>
-                  </button>
+                  </div>
                 ))}
               </div>
             </div>
           </div>
 
-          {/* Right Column: High-Tech Interactive Terminal Chat */}
+          {/* Right Column: Embedded Gradio Chat */}
           <div className="lg:col-span-8">
             <div className="glass-panel rounded-2xl border border-white/10 overflow-hidden shadow-2xl flex flex-col h-[640px] bg-[#070b13]/95 relative">
               {/* Terminal Titlebar */}
@@ -222,119 +134,29 @@ export const DigitalTwinSection: React.FC = () => {
 
                 <div className="flex items-center gap-3">
                   <span className="hidden sm:inline font-mono text-[10px] text-gray-400">
-                    nvidia/nemotron-3.5-lightning:free
+                    Gradio · Render
                   </span>
                   <button
-                    onClick={handleReset}
+                    onClick={() => setReloadKey((k) => k + 1)}
                     className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer text-xs font-mono flex items-center gap-1"
-                    title="Reset Conversation"
+                    title="Reload Chat"
                   >
                     <RefreshCwIcon className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">Reset</span>
+                    <span className="hidden sm:inline">Reload</span>
                   </button>
                 </div>
               </div>
 
-              {/* Chat Stream */}
-              <div ref={chatStreamRef} className="flex-1 p-5 overflow-y-auto space-y-4 text-sm font-sans">
-                {messages.map((msg, idx) => (
-                  <div
-                    key={idx}
-                    className={`flex gap-3.5 ${
-                      msg.role === "user" ? "justify-end" : "justify-start"
-                    }`}
-                  >
-                    {msg.role === "assistant" && (
-                      <div className="w-8 h-8 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0 mt-0.5">
-                        <BotIcon className="w-4 h-4" />
-                      </div>
-                    )}
-
-                    <div
-                      className={`max-w-[85%] rounded-2xl p-4 shadow-lg ${
-                        msg.role === "user"
-                          ? "bg-cyan-400 text-black font-medium font-sans"
-                          : "bg-[#0d1322] border border-white/10 text-gray-200 font-sans"
-                      }`}
-                    >
-                      <div className="whitespace-pre-wrap leading-relaxed text-xs sm:text-sm">
-                        {msg.content}
-                      </div>
-
-                      {msg.role === "assistant" && (
-                        <div className="mt-2 pt-2 border-t border-white/5 flex items-center justify-between text-[10px] font-mono text-gray-500">
-                          <span>
-                            {msg.source === "openrouter"
-                              ? "via OpenRouter (Nemotron)"
-                              : "Sreelal Core Knowledge"}
-                          </span>
-                          <button
-                            onClick={() => copyMessage(msg.content, idx)}
-                            className="hover:text-cyan-300 transition-colors cursor-pointer flex items-center gap-1"
-                            title="Copy reply"
-                          >
-                            {copiedIndex === idx ? (
-                              <>
-                                <CheckIcon className="w-3 h-3 text-emerald-400" />
-                                <span className="text-emerald-400">Copied</span>
-                              </>
-                            ) : (
-                              <>
-                                <CopyIcon className="w-3 h-3" />
-                                <span>Copy</span>
-                              </>
-                            )}
-                          </button>
-                        </div>
-                      )}
-                    </div>
-
-                    {msg.role === "user" && (
-                      <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white shrink-0 mt-0.5">
-                        <UserIcon className="w-4 h-4" />
-                      </div>
-                    )}
-                  </div>
-                ))}
-
-                {loading && (
-                  <div className="flex gap-3.5 items-center">
-                    <div className="w-8 h-8 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
-                      <BotIcon className="w-4 h-4 animate-pulse" />
-                    </div>
-                    <div className="bg-[#0d1322] border border-white/10 px-4 py-3 rounded-2xl text-xs font-mono text-cyan-300 flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-                      <span>Nemotron 3.5 is generating response...</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Chat Input Bar */}
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleSend();
-                }}
-                className="p-3.5 bg-[#0b0f1a] border-t border-white/10 flex items-center gap-3"
-              >
-                <input
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder={`Ask Sreelal's Digital Twin anything about his ${PROFILE.yearsOfExperienceLabel} years career...`}
-                  disabled={loading}
-                  className="flex-1 bg-[#06080e] border border-white/15 rounded-xl px-4 py-3 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-400 font-sans transition-colors"
+              {/* Embedded Gradio Chat */}
+              <div className="flex-1 bg-white">
+                <iframe
+                  key={reloadKey}
+                  src={GRADIO_CHAT_URL}
+                  title="Sreelal's Digital Twin Chat"
+                  className="w-full h-full border-0"
+                  allow="clipboard-write"
                 />
-                <button
-                  type="submit"
-                  disabled={!input.trim() || loading}
-                  className="px-5 py-3 rounded-xl bg-cyan-400 text-black hover:bg-cyan-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all font-mono font-semibold text-xs flex items-center gap-2 cursor-pointer shadow-lg shadow-cyan-400/20"
-                >
-                  <span>SEND</span>
-                  <SendIcon className="w-4 h-4 text-black" />
-                </button>
-              </form>
+              </div>
             </div>
           </div>
         </div>
@@ -342,3 +164,4 @@ export const DigitalTwinSection: React.FC = () => {
     </section>
   );
 };
+

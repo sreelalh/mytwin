@@ -1,1 +1,0 @@
-globalThis.__RSC_MANIFEST=(globalThis.__RSC_MANIFEST||{});globalThis.__RSC_MANIFEST["/api/chat/route"]={"moduleLoading":{"prefix":"/_next/"},"ssrModuleMapping":{},"edgeSSRModuleMapping":{},"clientModules":{},"entryCSSFiles":{"/Users/sreelal/Documents/MyDocs/Learnings/AI/VibeCoding/source/digitaltwin/app/api/chat/route":[]},"rscModuleMapping":{},"edgeRscModuleMapping":{}};
